@@ -1408,9 +1408,10 @@
   // decide to change it, remember that it is impossible to redefinite/overwrite groups; you may only add
   // new ones.
   $config['mod']['groups'] = array(
-    10	=> 'Janitor',
-    20	=> 'Mod',
-    30	=> 'Admin'
+    0   => 'Disabled',
+    10  => 'Janitor',
+    20  => 'Mod',
+    30  => 'Admin'
   );
 
   // If you add stuff to the above, you'll need to call this function immediately after.
@@ -1422,9 +1423,9 @@
 
   // Capcode permissions.
   $config['mod']['capcode'] = array(
-  //	JANITOR		=> array('Janitor'),
-    MOD				=> array('Mod'),
-    ADMIN			=> true
+    //JANITOR => array('Janitor'),
+    MOD     => array('Mod'),
+    ADMIN   => true
   );
 
   // Example: Allow mods to post with "## Moderator" as well
