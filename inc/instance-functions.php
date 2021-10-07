@@ -2,7 +2,7 @@
 require_once("inc/8chan-functions.php");
 require_once("inc/8chan-mod-pages.php");
 
-require_once "lib/htmlpurifier-4.6.0/library/HTMLPurifier.auto.php";
+require_once "lib/htmlpurifier-4.13.0/library/HTMLPurifier.auto.php";
 
 
 function max_posts_per_hour($post) {
