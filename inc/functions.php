@@ -912,7 +912,7 @@ function fetchBoardActivity( array $uris = array(), $forTime = false, $detailed 
 
   // Query for stats for these boards.
   if (count($uris)) {
-    $uriSearch = "`stat_uri` IN (\"" . implode( (array) $uris, "\",\"" ) . "\") AND ";
+    $uriSearch = "`stat_uri` IN (\"" . implode( "\",\"", (array) $uris ) . "\") AND ";
   }
   else {
     $uriSearch = "";
@@ -1006,7 +1006,7 @@ function fetchBoardTags( $uris ) {
   global $config;
 
   $boardTags = array();
-  $uris = "\"" . implode( (array) $uris, "\",\"" ) . "\"";
+  $uris = "\"" . implode( "\",\"", (array) $uris ) . "\"";
 
   $tagQuery = prepare("SELECT * FROM ``board_tags`` WHERE `uri` IN ({$uris})");
   $tagQuery->execute() or error(db_error($tagQuery));
