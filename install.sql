@@ -18,6 +18,27 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `newsplus`
+--
+
+CREATE TABLE `newsplus` (
+  `thread` int(10) UNSIGNED NOT NULL,
+  `dead` tinyint(1) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `posts_n`
+--
+
+CREATE TABLE `posts_n` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT 'thread',
+  `bump` int(11) NOT NULL COMMENT 'datetime of some type'
+) ENGINE=MyISAM DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `antispam`
 --
 
