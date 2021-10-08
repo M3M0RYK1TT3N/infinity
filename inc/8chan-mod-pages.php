@@ -77,7 +77,7 @@
 		$body = "Thanks for your interest in this board. Kindly find the username and password below. You can login at https://8ch.net/mod.php.<br>Username: {$mods[0]['username']}<br>Password: {$password}<br>Thanks for using 8chan!";
 
 		modLog("Reassigned board /$b/");
-		
+
 		mod_page(_('Edit reassign'), 'blank.html', array('board'=>$board,'token'=>make_secure_link_token('reassign/'.$board['uri']),'body'=>$body));
 	}
 
@@ -117,14 +117,14 @@
 
 			$salt = generate_salt();
 			$password = hash('sha256', $salt . sha1($_POST['password']));
-			
+
 			$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, 19, :board, "")');
 			$query->bindValue(':username', $_POST['username']);
 			$query->bindValue(':password', $password);
 			$query->bindValue(':salt', $salt);
 			$query->bindValue(':board', $b);
 			$query->execute() or error(db_error($query));
-			
+
 			$userID = $pdo->lastInsertId();
 
 
@@ -136,7 +136,7 @@
 				$query = prepare('SELECT * FROM ``mods`` WHERE id = :id');
 				$query->bindValue(':id', $d);
 				$query->execute() or error(db_error($query));
-				
+
 				$result = $query->fetch(PDO::FETCH_ASSOC);
 
 				if (!$result) {
@@ -157,9 +157,9 @@
 		$query->bindValue(':board', $b);
 		$query->execute() or error(db_error($query));
 		$volunteers = $query->fetchAll(PDO::FETCH_ASSOC);
-			
+
 		mod_page(_('Edit volunteers'), 'mod/volunteers.html', array('board'=>$board,'token'=>make_secure_link_token('volunteers/'.$board['uri']),'volunteers'=>$volunteers));
-	
+
 	}
 
 	function mod_8_flags($b) {
@@ -188,10 +188,10 @@
 
 			if (strlen($description) > 255)
 				error(_('Flag description too long!'));
-	
+
 			if ($id) {
 				$f = 'flag-'.$id;
-			} else { 
+			} else {
 				$f = 'file';
 				$id = time() . substr(microtime(), 2, 3);
 			}
@@ -207,7 +207,7 @@
 			if ($extension != 'png') {
 				error(_('Flags must be in PNG format.'));
 			}
-	
+
 			if (filesize($upload) > 48000){
 				error(_('File too large!'));
 			}
@@ -228,7 +228,7 @@
 			$config['user_flags'][$id] = utf8tohtml($description);
 			file_write($b.'/flags.ser', serialize($config['user_flags']));
 		}
-	
+
 		// Handle a new flag, if any.
 		if (isset($_FILES['file'])){
 			handle_file(false, $_POST['description'], $b, $dir);
@@ -309,7 +309,7 @@ FLAGS;
 
 		if (!hasPermission($config['mod']['edit_assets'], $b))
 			error($config['error']['noaccess']);
-	
+
 		if (!openBoard($b))
 			error("Could not open board!");
 
@@ -322,7 +322,7 @@ FLAGS;
 			symlink(getcwd() . '/' . $config['spoiler_image'], "$dir/spoiler.png");
 			symlink(getcwd() . '/' . $config['no_file_image'], "$dir/no-file.png");
 		}
-		
+
 		// "File deleted"
 		if (isset($_FILES['deleted_file']) && !empty($_FILES['deleted_file']['tmp_name'])){
 			$upload = $_FILES['deleted_file']['tmp_name'];
@@ -426,7 +426,7 @@ FLAGS;
 
 		if (!hasPermission($config['mod']['edit_banners'], $b))
 			error($config['error']['noaccess']);
-	
+
 		if (!openBoard($b))
 			error("Could not open board!");
 
@@ -450,7 +450,7 @@ FLAGS;
 			if (!in_array($extension, array('jpg','jpeg','png','gif'))){
 				error('Not an image extension.');
 			}
-	
+
 			if (filesize($upload) > 512000){
 				error('File too large!');
 			}
@@ -494,7 +494,7 @@ FLAGS;
 
 		if (!hasPermission($config['mod']['edit_settings'], $b))
 			error($config['error']['noaccess']);
-	
+
 		if (!openBoard($b))
 			error("Could not open board!");
 
@@ -540,12 +540,12 @@ FLAGS;
 			if (($tor_image_posting === 'true') && isset($_POST['meta_noindex'])) {
 				error('Please index your board to enable this.');
 			}
-			
+
 			if ($_POST['locale'] !== 'en' && in_array($_POST['locale'], $possible_languages)) {
 				$locale = "\$config['locale'] = '{$_POST['locale']}.UTF-8';";
 			} else {
 				$locale = '';
-			} 
+			}
 
 			if (isset($_POST['max_images']) && (int)$_POST['max_images'] && (int)$_POST['max_images'] <= 5) {
 				$_POST['max_images'] = (int)$_POST['max_images'];
@@ -553,7 +553,7 @@ FLAGS;
 					   \$config['additional_javascript'][] = 'js/multi-image.js';";
 			} else {
 				$multiimage = '';
-			} 
+			}
 
 			if (isset($_POST['custom_assets'])) {
 				$assets = "\$config['custom_assets'] = true;
@@ -613,7 +613,10 @@ FLAGS;
 
 			$anonymous = base64_encode($_POST['anonymous']);
 			$blotter = base64_encode(purify_html(html_entity_decode($_POST['blotter'])));
-			$add_to_config = @file_get_contents($b.'/extra_config.php');
+			$add_to_config = '';
+			if (file_exists($b.'/extra_config.php')) {
+				$add_to_config = @file_get_contents($b.'/extra_config.php');
+			}
 			$replace = '';
 
 			if (isset($_POST['replace'])) {
@@ -624,7 +627,7 @@ FLAGS;
 					foreach ($_POST['replace'] as $i => $r ) {
 						if ($r !== '') {
 							$w = $_POST['with'][$i];
-							
+
 							if (strlen($w) > 255) {
 								error(sprintf(_('Sorry, %s is too long. Max replacement is 255 characters'), utf8tohtml($w)));
 							}
@@ -639,7 +642,7 @@ FLAGS;
 			}
 
 			if (isset($_POST['hour_max_threads']) && (int)$_POST['hour_max_threads'] > 0 && (int)$_POST['hour_max_threads'] < 101 ) {
-				$hour_max_threads = (int)$_POST['hour_max_threads'];	
+				$hour_max_threads = (int)$_POST['hour_max_threads'];
 			} else {
 				$hour_max_threads = 'false';
 			}
@@ -653,7 +656,7 @@ FLAGS;
 				}
 			} else {
 				$max_pages = 15;
-			}			
+			}
 
 			if (isset($_POST['reply_limit'])) {
 				$rl = (int)$_POST['reply_limit'];
@@ -700,7 +703,7 @@ FLAGS;
 			$query->bindValue(':indexed', !isset($_POST['meta_noindex']));
 			$query->bindValue(':public_bans', isset($_POST['public_bans']));
 			$query->bindValue(':public_logs', (int)$_POST['public_logs']);
-			$query->bindValue(':8archive', isset($_POST['8archive']));
+			$query->bindValue(':8archive', (int)isset($_POST['8archive']));
 			$query->execute() or error(db_error($query));
 
 			$config_file = <<<EOT
@@ -737,7 +740,7 @@ FLAGS;
 \$config['oekaki'] = $oekaki;
 \$config['min_body'] = $min_body;
 \$config['mod']['view_bumplock'] = $view_bumplock;
-$code_tags $katex $replace $multiimage $allow_flash $allow_pdf $user_flags 
+$code_tags $katex $replace $multiimage $allow_flash $allow_pdf $user_flags
 $assets
 $locale
 $anal_filenames
@@ -751,11 +754,11 @@ EOT;
 
 			// Clean up our CSS...no more expression() or off-site URLs.
 			$clean_css = preg_replace('/expression\s*\(/', '', $_POST['css']);
-	
+
 			$matched = array();
 
 			preg_match_all("#{$config['link_regex']}#im", $clean_css, $matched);
-			
+
 			if (isset($matched[0])) {
 				foreach ($matched[0] as $match) {
 					$match_okay = false;
@@ -769,14 +772,14 @@ EOT;
 					}
 				}
 			}
-			
+
 			//Filter out imports from sites with potentially unsafe content
 			$match_imports = '@import[^;]*';
 			$matched = array();
 			preg_match_all("#$match_imports#im", $clean_css, $matched);
-			
+
 			$unsafe_import_urls = array('https://a.pomf.se/');
-			
+
 			if (isset($matched[0])) {
 				foreach ($matched[0] as $match) {
 					$match_okay = true;
@@ -817,7 +820,7 @@ EOT;
 					buildThread($post['id']);
 				}
 			}
-		
+
 			modLog('Edited board settings', $b);
 		}
 
@@ -835,8 +838,11 @@ EOT;
 			cache::delete('events_' . $board['uri']);
 			unlink('tmp/cache/locale_' . $board['uri']);
 		}
- 
-		$css = @file_get_contents('stylesheets/board/' . $board['uri'] . '.css');
-	
+
+    $css = '';
+    if (file_exists('stylesheets/board/' . $board['uri'] . '.css')) {
+			$css = file_get_contents('stylesheets/board/' . $board['uri'] . '.css');
+		}
+
 		mod_page(_('Board configuration'), 'mod/settings.html', array('board'=>$board, 'css'=>prettify_textarea($css), 'token'=>make_secure_link_token('settings/'.$board['uri']), 'languages'=>$possible_languages,'allowed_urls'=>$config['allowed_offsite_urls']));
 	}
