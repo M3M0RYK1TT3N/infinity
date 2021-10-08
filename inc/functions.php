@@ -89,6 +89,7 @@ function loadConfig() {
 
   reset_events();
 
+
   $arrays = array(
     'db',
     'api',
@@ -113,12 +114,12 @@ function loadConfig() {
     'additional_javascript',
     'markup',
     'custom_pages',
-    'dashboard_links'
   );
 
   foreach ($arrays as $key) {
     $config[$key] = array();
   }
+  $config['mod']['dashboard_links'] = array();
 
   if (!file_exists('inc/instance-config.php'))
     $error('Posting is down momentarily. Please try again later.');
@@ -166,6 +167,9 @@ function loadConfig() {
     $current_locale = $config['locale'];
     init_locale($config['locale'], $error);
   }
+
+  if (!isset($config['flood_cache']))
+    $config['flood_cache'] = 60 * 60 * 24;
 
   if (!isset($config['global_message']))
     $config['global_message'] = false;
@@ -776,7 +780,10 @@ function file_unlink($path) {
     $debug['unlink'][] = $path;
   }
 
-  $ret = @unlink($path);
+  $ret = false;
+  if (file_exists($path)) {
+    $ret = @unlink($path);
+  }
 
         if ($config['gzip_static']) {
                 $gzpath = "$path.gz";
