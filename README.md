@@ -1,9 +1,9 @@
-infinity
+infinity 2021
 ========================================================
 
 About
 ------------
-infinity is a fork of vichan, with the difference that infinity is geared towards allowing users to create their own boards. A running instance is at [8ch.net](https://8ch.net/) (new! a user of the software wrote to me that they created a Polish version: [8ch.pl](http://8ch.pl/))
+infinity is a fork of vichan, with the difference that infinity is geared towards allowing users to create their own boards. [8ch.net](https://8ch.net/) used to run this software.
 
 Most things (other than installation) that apply to upstream vichan also apply to infinity. See their readme for a detailed FAQ: https://github.com/vichan-devel/vichan/blob/master/README.md
 
@@ -11,21 +11,39 @@ If you are not interested in letting your users make their own boards, install v
 
 **Much like Arch Linux, infinity should be considered ``rolling release''. Unlike upstream vichan, we have no install.php. Database schema and templates are changed often and it is on you to read the Git log before updating!**
 
+Changes since ctrlcctrlv abandonment
+------------
+- php8 support (tested up to 8.0.8)
+- code style changes (spaces instead of tabs)
+- add missing tables to install.sql
+- change instance config to not use apc, just disable to reduce requirements
+
+Support
+------------
+If you have a github account, just open an issue or PR, otherwise:
+- [Endchan Discord](https://discord.gg/ffWabPn)
+- irc.rizon.net port 6667 #endchan
+
 Installation
 ------------
 Basic requirements:
 A computer running a Unix or Unix-like OS(infinity has been specifically tested with and is known to work under Ubuntu 14.x), Apache, MySQL, and PHP
 * Make sure Apache has read/write access to the directory infinity resides in.
-* `install.php` is not maintained. Don't use it.
-* As of February 22, 2015, you need the [DirectIO module (dio.so)](http://php.net/manual/en/ref.dio.php). This is for compatibility with NFS. 
+* As of February 22, 2015, you need the [DirectIO module (dio.so)](http://php.net/manual/en/ref.dio.php). This is for compatibility with NFS.
 
-Step 1. Create infinity's database from the included install.sql file. Enter mysql and create an empty database named 'infinity'. Then cd into the infinity base directory and run:
+Step 1. Get the submodules
+```
+git submodule init
+git submodule update
+```
+
+Step 2. Create infinity's database from the included install.sql file. Enter mysql and create an empty database named 'infinity'. Then cd into the infinity base directory and run:
 ```
 mysql -uroot -p infinity < install.sql
 echo '+ <a href="https://github.com/ctrlcctrlv/infinity">infinity</a> '`git rev-parse HEAD|head -c 10` > .installed
 ```
 
-Step 2. /inc/secrets.php does not exist by default, but infinity needs it in order to function. To fix this, cd into /inc/ and run:
+Step 3. /inc/secrets.php does not exist by default, but infinity needs it in order to function. To fix this, cd into /inc/ and run:
 ```
 sudo cp secrets.example.php secrets.php
 ```
