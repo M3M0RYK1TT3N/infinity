@@ -66,13 +66,12 @@ if (sizeof($users) > 0){
 error(_('The username you\'ve tried to enter already exists!'));
 }
 
-$salt = generate_salt();
-$password = hash('sha256', $salt . sha1($password));
+list($version, $password) = crypt_password($password);
 
-$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
+$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :version, :type, :boards, :email)');
 $query->bindValue(':username', $username);
 $query->bindValue(':password', $password);
-$query->bindValue(':salt', $salt);
+$query->bindValue(':version', $version);
 $query->bindValue(':type', 20);
 $query->bindValue(':boards', $uri);
 $query->bindValue(':email', $email);
@@ -97,7 +96,8 @@ buildIndex();
 
 rebuildThemes('boards');
 
-$query = prepare("INSERT INTO ``board_create``(uri) VALUES(:uri)");
+$query = prepare("INSERT INTO ``board_create`` VALUES(:time, :uri)");
+$query->bindValue(':time', time());
 $query->bindValue(':uri', $uri);
 $query->execute() or error(db_error());
 
